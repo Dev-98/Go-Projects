@@ -1,0 +1,3 @@
+package urlshortner
+
+func YamlMapper()

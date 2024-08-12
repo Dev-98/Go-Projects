@@ -2,6 +2,7 @@ package helper
 
 import (
 	"encoding/json"
+	_ "fmt"
 	"html/template"
 	"io"
 	"net/http"
@@ -22,8 +23,10 @@ type StoryArc struct {
 type Story map[string]StoryArc
 
 func ParseJson(f io.Reader) (Story, error) {
+	// ``` Function for parsing a json data into struct var ```
 	d := json.NewDecoder(f)
-	var story Story
+	// var story Story
+	story := make(Story)
 	if err := d.Decode(&story); err != nil {
 		return nil, err
 	}
@@ -67,12 +70,16 @@ func init() {
 
 var tpl *template.Template
 
-func NewHandler(s Story) http.Handler {
-	return handler{s}
+func NewHandler(s Story, t *template.Template) http.Handler {
+	if t == nil {
+		t = tpl
+	}
+	return handler{s, t}
 }
 
 type handler struct {
 	s Story
+	t *template.Template
 }
 
 func (h handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
